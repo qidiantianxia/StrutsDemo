@@ -1,0 +1,46 @@
+Struts项目
+下载struts2的文件
+1.导入lib目录下的jar包到WEB-INF
+2.拷贝struts.xml到项目src下 及相关配置
+3.在web.xml文件中加入过滤器代码
+项目运行错误
+解决办法
+错误一：struts放错了位置，放在了WEB-INF下面，应该放在src下
+错误二：LoginAction写错了包名
+错误三：多余的jar包，删除
+
+注意
+1.struts.xml提示不显示，在Preferences下搜索xml，选择Xml Catalog
+
+Struts2知识点
+1.流程
+2.OGNL标签
+3.通配符
+
+第1种最直接的
+<a href="<%=path%>/userAction.action">添加</a>
+
+<action name="userAction" class="com.jike.struts.action.UserAction" method="add">
+<result name="success">index.jsp</result>
+</action>
+第2种使用通配符实现在新版本中需要在result后添加 allowed-method标签
+<a href="<%=path%>/UserAction_add.action">添加</a>
+
+<action name="*_*" class="com.jike.struts.action.{1}"
+			method="{2}">
+	<result name="success">index.jsp</result>
+	<allowed-methods>add,show,update,delete</allowed-methods>
+</action>
+第3种动态访问
+<a href="<%=path%>/userAction!add.action">添加</a>
+
+<!-- 是否开启动态方法调用 -->
+<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+<action name="userAction" class="com.jike.struts.action.UserAction"
+			method="add">
+	<result name="success">index.jsp</result>
+</action>
+4.拦截器
+要求：
+第一：拦截器必须放在包内第一行
+第二：所有action有defaultStack默认拦截器,但是引用自定义拦截器以后，必须显示声明默认拦截器

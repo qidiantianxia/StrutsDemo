@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+<struts>
+
+	<!--bean 标签用于创建一个JavaBean实例 -->
+	<!--constant 标签用于默认行为 -->
+	<!--package 包标签用于区分不同的请求，比如网站前台请求、网站后台请求 -->
+
+	<!--配置web默认编码集，相当于HttpServletRequest.setChartacterEncoding用法 -->
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<!--默认我们struts2的请求后缀是.action，也就是说我们不配置该元素，action/do都可以 -->
+	<constant name="struts.action.extension" value="action,do"></constant>
+	<!--设置浏览器是否缓存静态内容，默认值是true，在我们开发阶段建议关闭，防止修改后测试失败 -->
+	<constant name="struts.serve.static.browserCache" value="false"></constant>
+	<!--当struts配置文件修改后，系统是否自动重新加载该文件，默认为false -->
+	<constant name="struts.configuration.xml.reload" value="true"></constant>
+	<!--开发模式下使用，这样可以打印出更加详细的错误信息 -->
+	<constant name="struts.devMode" value="true"></constant>
+	<!--默认视图主题 -->
+	<constant name="struts.ui.theme" value="simple"></constant>
+	<!-- 是否开启动态方法调用 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+
+	<!--name包名，用于被别的包调用或继承 namespace="" -->
+	<package name="uweb" extends="struts-default">
+		<interceptors>
+			<interceptor name="CheckInter" class="com.jike.interceptor.CheckInterceptor">
+				<!--定义属性 -->
+				<!-- <param name="someThing">admin</param> -->
+			</interceptor>
+
+			<!--方法拦截器  -->
+			<interceptor name="MethodInter"
+				class="com.jike.interceptor.MethodInterceptor">
+				<param name="includeMethods">add</param>
+				<!-- <param name="excludeMehods">show</param> -->
+			</interceptor>
+
+			<!--拦截方法栈 -->
+			<interceptor-stack name="UserInter">
+				<interceptor-ref name="CheckInter"></interceptor-ref>
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<!--自定义默认拦截器 -->
+		<default-interceptor-ref name="UserInter" />
+
+		<!--全局返回结果 -->
+		<global-results>
+			<result name="error">/login.jsp</result>
+			<result name="success">/success.jsp</result>
+		</global-results>
+
+		<!-- <global-allowed-methods>regex:.*</global-allowed-methods> -->
+		<!--action相当于以前的servlet的概念，对应一个请求name为请求地址的url地址 localhost:8080/项目名/user/login.do -->
+		<action name="login" class="com.jike.action.LoginAction">
+			<!--定义拦截器，这样就不会走 自定义默认拦截器 -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="success">/index.jsp</result>
+			<result name="error">/login.jsp</result>
+		</action>
+
+		<action name="*_*" class="com.jike.action.{1}" method="{2}">
+			<interceptor-ref name="MethodInter"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<result name="success">/success.jsp</result>
+			<allowed-methods>add,show,update,delete</allowed-methods>
+		</action>
+
+		<!-- <action name="UserAction" class="com.jike.action.UserAction" method="*"> 
+			<result name="success">/success.jsp</result> <allowed-methods>regex:.*</allowed-methods> 
+			</action> -->
+	</package>
+</struts>
